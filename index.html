@@ -1031,6 +1031,7 @@
 
             // --- Export PDF (html2pdf) ---
             document.getElementById('btnPdf').addEventListener('click', () => {
+                // Usamos 'pdfContent' que es el ID actual del preview en el HTML
                 const element = document.getElementById('pdfContent');
                 const clienteName = document.getElementById('cliente').value.replace(/\s+/g, '_') || 'Cliente';
 
@@ -1040,37 +1041,58 @@
                 btn.classList.add('opacity-80', 'cursor-not-allowed');
                 btn.disabled = true;
 
-                const clone = element.cloneNode(true);
-                clone.style.width = '210mm';
-                clone.style.padding = '40px';
-                clone.style.boxSizing = 'border-box';
-                clone.style.background = 'white';
-                clone.style.boxShadow = 'none';
+                // 1. Congelar el diseño (Pre-procesamiento): Guardar estilos originales
+                const originalStyles = {
+                    width: element.style.width,
+                    maxWidth: element.style.maxWidth,
+                    overflow: element.style.overflow
+                };
 
-                const hiddenContainer = document.createElement('div');
-                hiddenContainer.style.position = 'absolute';
-                hiddenContainer.style.left = '-9999px';
-                hiddenContainer.style.top = '-9999px';
-                hiddenContainer.style.width = '210mm';
-                hiddenContainer.appendChild(clone);
-                document.body.appendChild(hiddenContainer);
+                // 2. Aplicar forzosamente al element
+                element.style.setProperty('width', '800px', 'important');
+                element.style.setProperty('max-width', '800px', 'important');
+                element.style.setProperty('overflow', 'visible', 'important');
 
+                // 3. Buscar contenedor padre y quitar overflow temporalmente
+                const parentScroll = element.closest('.overflow-x-auto') || element.closest('.overflow-hidden');
+                let removedClasses = [];
+                if (parentScroll) {
+                    if (parentScroll.classList.contains('overflow-x-auto')) {
+                        parentScroll.classList.remove('overflow-x-auto');
+                        removedClasses.push('overflow-x-auto');
+                    }
+                    if (parentScroll.classList.contains('overflow-hidden')) {
+                        parentScroll.classList.remove('overflow-hidden');
+                        removedClasses.push('overflow-hidden');
+                    }
+                }
+
+                // 4. Configuración a prueba de balas
                 const opt = {
-                    margin: [0, 0, 0, 0],
+                    margin: [10, 10, 10, 10],
                     filename: `Cotizacion_${clienteName}.pdf`,
-                    html2canvas: { scale: 2, useCORS: true, letterRendering: true, windowWidth: 1024 },
+                    html2canvas: { scale: 2, useCORS: true, windowWidth: 800, scrollY: 0, letterRendering: true },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
-                html2pdf().from(clone).set(opt).save().then(() => {
-                    document.body.removeChild(hiddenContainer);
-                    btn.innerHTML = originalText;
-                    btn.classList.remove('opacity-80', 'cursor-not-allowed');
-                    btn.disabled = false;
-                }).catch((error) => {
-                    console.error("Error generating PDF", error);
-                    document.body.removeChild(hiddenContainer);
-                    alert("Ocurrió un error al generar el PDF.");
+                // 5. Generación y Restauración
+                html2pdf().set(opt).from(element).save().finally(() => {
+                    // RESTAURAR INMEDIATAMENTE estilos originales
+                    if (originalStyles.width) element.style.width = originalStyles.width;
+                    else element.style.removeProperty('width');
+
+                    if (originalStyles.maxWidth) element.style.maxWidth = originalStyles.maxWidth;
+                    else element.style.removeProperty('max-width');
+
+                    if (originalStyles.overflow) element.style.overflow = originalStyles.overflow;
+                    else element.style.removeProperty('overflow');
+
+                    // Restaurar clases de overflow al padre
+                    if (parentScroll && removedClasses.length > 0) {
+                        removedClasses.forEach(cls => parentScroll.classList.add(cls));
+                    }
+
+                    // Regresar el botón a su estado normal
                     btn.innerHTML = originalText;
                     btn.classList.remove('opacity-80', 'cursor-not-allowed');
                     btn.disabled = false;

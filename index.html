@@ -1032,10 +1032,10 @@
                 const clienteName = document.getElementById('cliente').value.replace(/\s+/g, '_') || 'Cliente';
 
                 const opt = {
-                    margin: 0,
+                    margin: [5, 0, 10, 0],
                     filename: `Cotizacion_${clienteName}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
+                    html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false, windowWidth: 1200 },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
@@ -1045,13 +1045,19 @@
                 btn.classList.add('opacity-80', 'cursor-not-allowed');
                 btn.disabled = true;
 
+                // Asegurar ancho fijo para que no se corte por el overflow del padre
+                const originalWidth = element.style.width;
+                element.style.width = '210mm';
+
                 try {
                     html2pdf().set(opt).from(element).save().then(() => {
+                        element.style.width = originalWidth;
                         btn.innerHTML = originalText;
                         btn.classList.remove('opacity-80', 'cursor-not-allowed');
                         btn.disabled = false;
                     }).catch((error) => {
                         console.error("Error generating PDF", error);
+                        element.style.width = originalWidth;
                         alert("El PDF funcionará correctamente cuando se despliegue en el servidor web (Vercel).");
                         btn.innerHTML = originalText;
                         btn.classList.remove('opacity-80', 'cursor-not-allowed');
@@ -1059,6 +1065,7 @@
                     });
                 } catch (err) {
                     console.error("Error try/catch", err);
+                    element.style.width = originalWidth;
                     alert("El PDF funcionará correctamente cuando se despliegue en el servidor web (Vercel).");
                     btn.innerHTML = originalText;
                     btn.classList.remove('opacity-80', 'cursor-not-allowed');

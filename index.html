@@ -54,10 +54,16 @@
             }
             @page {
                 size: A4 portrait;
-                margin: 10mm;
+                margin: 0;
             }
             .no-print {
                 display: none !important;
+            }
+            #document-preview, #pdfContent {
+                padding: 15mm 15mm !important;
+                box-sizing: border-box;
+                width: 100% !important;
+                min-height: 100vh !important;
             }
         }
         .custom-gradient {
@@ -1053,7 +1059,18 @@
 
             // --- Export PDF (Nativo) ---
             document.getElementById('btnPdf').addEventListener('click', () => {
+                const clienteInput = document.getElementById('cliente').value.trim();
+                const nombreCliente = (clienteInput || 'Cliente').replace(/\s+/g, '_');
+                
+                const originalTitle = document.title;
+                document.title = `COTIZACIÓN_${nombreCliente}`;
+                
                 window.print();
+                
+                // Restaurar el título original después de un pequeño delay
+                setTimeout(() => {
+                    document.title = originalTitle;
+                }, 500);
             });
 
             // --- Export Excel (xlsx-js-style) ---

@@ -22,8 +22,8 @@
                     },
                     colors: {
                         brand: {
-                            light: '#905CFF',
-                            dark: '#400078',
+                            light: '#D81B60',
+                            dark: '#C2185B',
                         }
                     }
                 }
@@ -32,7 +32,7 @@
     </script>
 
     <!-- External Libraries -->
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Phosphor Icons for a clean, modern look -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -100,7 +100,7 @@
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-gray-900 leading-tight">Cotizador Rápido</h1>
-                        <p class="text-xs text-gray-400 font-medium tracking-wide">TECH B2B REAL ESTATE</p>
+                        <p class="text-xs text-gray-400 font-medium tracking-wide">MEGAPROYECTO PACHAMAMA</p>
                     </div>
                 </div>
 
@@ -289,24 +289,23 @@
                 <div id="pdfContent" class="a4-preview p-14 flex flex-col text-sm text-gray-800">
 
                     <!-- HEADER -->
-                    <div class="flex justify-between items-start mb-12 border-b-2 border-gray-100 pb-8">
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="w-16 h-16 rounded-xl custom-gradient flex items-center justify-center text-white">
-                                <i class="ph-fill ph-buildings text-3xl"></i>
-                            </div>
-                            <div>
-                                <h2 class="text-xl font-bold text-gray-900 tracking-tight">TECH B2B</h2>
-                                <p class="text-xs text-gray-500 font-medium">REAL ESTATE S.A.C.</p>
-                                <p class="text-[10px] text-gray-400 mt-1">RUC: 20123456789</p>
+                    <div class="flex justify-between items-end border-b-4 border-[#D81B60] pb-0 mb-8">
+                        <div class="flex items-end">
+                            <img src="logo.png" alt="Megaproyecto Pachamama" class="h-44 w-auto object-contain block">
+                            <div class="h-24 border-l-2 border-gray-300 mx-8 mb-6"></div>
+                            <div class="mb-6">
+                                <h1 class="text-5xl font-light text-gray-800 tracking-tight leading-none mb-2">COTIZACIÓN</h1>
+                                <p class="text-sm text-gray-500">Válido por 24 horas</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <h1 class="text-4xl font-light text-gray-900 tracking-tighter mb-3 uppercase">Cotización
-                            </h1>
-                            <div class="flex gap-2 justify-end text-gray-400 font-medium text-sm items-center">
-                                <span>NRO:</span>
-                                <span class="w-24 border-b border-gray-300 inline-block h-4"></span>
+                        
+                        <div class="text-right mb-6">
+                            <div class="text-sm font-medium text-gray-600 mb-1">
+                                <span>Fecha: </span><span id="prevFechaHeader">-</span>
+                            </div>
+                            <div class="text-sm font-medium text-gray-600 flex items-center justify-end gap-2">
+                                <span>Nro:</span>
+                                <span class="w-16 border-b border-gray-300 inline-block h-4"></span>
                             </div>
                         </div>
                     </div>
@@ -411,9 +410,8 @@
                     <!-- FOOTER -->
                     <div
                         class="mt-12 pt-6 border-t border-gray-100 text-[10px] text-gray-400 text-center flex flex-col items-center gap-2">
-                        <p>Documento generado automáticamente. Los precios y condiciones están sujetos a variación sin
-                            previo aviso.</p>
-                        <p class="font-semibold text-gray-300">TECHB2B.COM</p>
+                        <p>Documento generado automáticamente. Los precios, áreas y condiciones comerciales están sujetos a evaluación y variación sin previo aviso. Válido por 24 horas.</p>
+                        <p class="font-semibold text-gray-300">PROYECTO PACHAMAMA</p>
                     </div>
                 </div>
             </div>
@@ -434,15 +432,19 @@
 
             // --- Mock Data for Asesores ---
             const asesoresData = [
-                { nombre: 'Brunella Sanchez', correo: 'bsanchez@techb2b.com' },
-                { nombre: 'Andrea Velasquez', correo: 'avelasquez@techb2b.com' },
-                { nombre: 'Carlos Ruiz', correo: 'cruiz@techb2b.com' }
+                { nombre: 'Adrian Emir Flores Cossio', correo: 'a.floresc@paradiseinmuebles.com' },
+                { nombre: 'Brunella Sanchez Velasco', correo: 'b.sanchez@paradiseinmuebles.com' },
+                { nombre: 'Segundo Adelmo Gutierrez Barrios', correo: 's.gutierrez@paradiseinmuebles.com' },
+                { nombre: 'Andrea Antuane Valerio Moreno', correo: 'a.valerio@paradiseinmuebles.com' },
+                { nombre: 'Fátima Lucia Abad Rios', correo: 'f.abad@paradiseinmuebles.com' },
+                { nombre: 'Jhon Bryan Pullo Perales', correo: 'j.pullo@paradiseinmuebles.com' },
+                { nombre: 'Jacqueline Ivonne Lurita Cardenas', correo: 'j.lurita@paradiseinmuebles.com' }
             ];
 
             const datalist = document.getElementById('asesoresList');
             asesoresData.forEach(a => {
                 const opt = document.createElement('option');
-                opt.value = `${a.nombre} (${a.correo})`;
+                opt.value = a.correo ? `${a.nombre} (${a.correo})` : a.nombre;
                 datalist.appendChild(opt);
             });
 
@@ -471,7 +473,7 @@
 
             const addRow = () => {
                 const id = ++pagosIdCounter;
-                state.pagos.push({ id, desc: 'SEPARACIÓN', monto: 0, fecha: today, indefinida: false });
+                state.pagos.push({ id, type: 'normal', desc: 'SEPARACIÓN', monto: 0, fecha: today, indefinida: false });
                 renderRows();
                 updatePreview();
             };
@@ -479,63 +481,456 @@
             const renderRows = () => {
                 container.innerHTML = '';
                 state.pagos.forEach((pago) => {
+                    if (!pago.type) pago.type = 'normal';
                     const row = document.createElement('div');
-                    row.className = 'grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto] gap-3 items-start bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm transition-all hover:border-brand-light/30';
+                    row.className = 'bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm transition-all hover:border-brand-light/30 mb-3';
 
-                    row.innerHTML = `
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Concepto</label>
-                    <select class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none desc-input font-medium cursor-pointer" data-id="${pago.id}">
-                        <option value="SEPARACIÓN" ${pago.desc === 'SEPARACIÓN' ? 'selected' : ''}>SEPARACIÓN</option>
-                        <option value="INICIAL" ${pago.desc === 'INICIAL' ? 'selected' : ''}>INICIAL</option>
-                        <option value="CUOTA" ${pago.desc === 'CUOTA' ? 'selected' : ''}>CUOTA</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Monto</label>
-                    <input type="number" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none monto-input font-semibold" placeholder="0.00" value="${pago.monto || ''}" data-id="${pago.id}">
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-1.5">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fecha</label>
-                        <label class="flex items-center gap-1.5 cursor-pointer group">
-                            <input type="checkbox" class="indef-input w-3 h-3 text-brand-light rounded border-gray-300 focus:ring-brand-light cursor-pointer" data-id="${pago.id}" ${pago.indefinida ? 'checked' : ''}>
-                            <span class="text-[10px] font-medium text-gray-500 group-hover:text-gray-800 transition-colors">Indefinida</span>
-                        </label>
-                    </div>
-                    <input type="date" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none fecha-input text-gray-600 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed cursor-pointer" data-id="${pago.id}" value="${pago.fecha}" ${pago.indefinida ? 'disabled' : ''}>
-                </div>
-                <div class="pt-6">
-                    <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors del-btn" data-id="${pago.id}" title="Eliminar fila">
-                        <i class="ph-bold ph-trash"></i>
-                    </button>
-                </div>
-            `;
+                    if (pago.type === 'normal' || (pago.type === 'cuota_block' && pago.desc !== 'CUOTA DEL RESTANTE') || (pago.type === 'inicial_block' && !pago.isFraccionado)) {
+                        row.innerHTML = `
+                        <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto] gap-3 items-start">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Concepto</label>
+                                <select class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none desc-input font-medium cursor-pointer" data-id="${pago.id}">
+                                    <option value="SEPARACIÓN" ${pago.desc === 'SEPARACIÓN' ? 'selected' : ''}>SEPARACIÓN</option>
+                                    <option value="INICIAL" ${pago.desc === 'INICIAL' ? 'selected' : ''}>INICIAL</option>
+                                    <option value="CUOTA DEL RESTANTE" ${pago.desc === 'CUOTA DEL RESTANTE' ? 'selected' : ''}>CUOTA DEL RESTANTE</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Monto</label>
+                                <input type="number" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none monto-input font-semibold" placeholder="0.00" value="${pago.monto || ''}" data-id="${pago.id}">
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fecha</label>
+                                    <label class="flex items-center gap-1.5 cursor-pointer group">
+                                        <input type="checkbox" class="indef-input w-3 h-3 text-brand-light rounded border-gray-300 focus:ring-brand-light cursor-pointer" data-id="${pago.id}" ${pago.indefinida ? 'checked' : ''}>
+                                        <span class="text-[10px] font-medium text-gray-500 group-hover:text-gray-800 transition-colors">Indefinida</span>
+                                    </label>
+                                </div>
+                                <input type="date" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none fecha-input text-gray-600 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed cursor-pointer" data-id="${pago.id}" value="${pago.fecha || today}" ${pago.indefinida ? 'disabled' : ''}>
+                            </div>
+                            <div class="pt-6">
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors del-btn" data-id="${pago.id}" title="Eliminar fila">
+                                    <i class="ph-bold ph-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        ${pago.type === 'inicial_block' ? `
+                        <div class="mt-3 pt-3 border-t border-gray-100">
+                            <label class="flex items-center gap-2 cursor-pointer group w-fit">
+                                <input type="checkbox" class="fraccionar-input w-4 h-4 text-brand-light rounded border-gray-300 focus:ring-brand-light cursor-pointer" data-id="${pago.id}" ${pago.isFraccionado ? 'checked' : ''}>
+                                <span class="text-xs font-semibold text-gray-600 group-hover:text-brand-dark transition-colors">¿Fraccionar saldo de Inicial?</span>
+                            </label>
+                        </div>
+                        ` : ''}
+                        `;
+                    } else if (pago.type === 'inicial_block' && pago.isFraccionado && !pago.isGenerated) {
+                        const saldo = Math.max(0, (pago.monto || 0) - (pago.adelanto || 0));
+                        const moneda = document.querySelector('input[name="moneda"]:checked')?.value || 'S/';
+                        row.innerHTML = `
+                        <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-3 items-start">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Concepto</label>
+                                <select class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none desc-input font-medium cursor-pointer" data-id="${pago.id}">
+                                    <option value="SEPARACIÓN" ${pago.desc === 'SEPARACIÓN' ? 'selected' : ''}>SEPARACIÓN</option>
+                                    <option value="INICIAL" ${pago.desc === 'INICIAL' ? 'selected' : ''}>INICIAL</option>
+                                    <option value="CUOTA DEL RESTANTE" ${pago.desc === 'CUOTA DEL RESTANTE' ? 'selected' : ''}>CUOTA DEL RESTANTE</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Monto Total Inicial</label>
+                                <input type="number" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none monto-input font-semibold" placeholder="0.00" value="${pago.monto || ''}" data-id="${pago.id}">
+                            </div>
+                            <div class="pt-6">
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors del-btn" data-id="${pago.id}" title="Eliminar fila">
+                                    <i class="ph-bold ph-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-gray-100 mb-3">
+                            <label class="flex items-center gap-2 cursor-pointer group w-fit">
+                                <input type="checkbox" class="fraccionar-input w-4 h-4 text-brand-light rounded border-gray-300 focus:ring-brand-light cursor-pointer" data-id="${pago.id}" ${pago.isFraccionado ? 'checked' : ''}>
+                                <span class="text-xs font-semibold text-gray-600 group-hover:text-brand-dark transition-colors">¿Fraccionar saldo de Inicial?</span>
+                            </label>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mt-3 bg-brand-light/5 p-3 rounded-lg border border-brand-light/10">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Adelanto (Hoy)</label>
+                                <input type="number" class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-light/50 outline-none adelanto-input" placeholder="0.00" value="${pago.adelanto || ''}" data-id="${pago.id}">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Saldo a Fraccionar</label>
+                                <input type="text" class="w-full px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg text-gray-500 font-semibold cursor-not-allowed saldo-readonly" value="${moneda} ${formatMoney(saldo)}" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">N° Cuotas Saldo</label>
+                                <input type="number" class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-light/50 outline-none meses-saldo-input" placeholder="2" value="${pago.meses || ''}" data-id="${pago.id}">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Día de Pago (1-30)</label>
+                                <input type="number" min="1" max="30" class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-light/50 outline-none dia-saldo-input" placeholder="15" value="${pago.diaPago || ''}" data-id="${pago.id}">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="w-full text-xs font-bold text-white bg-brand-light hover:bg-brand-dark py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 generar-fraccionamiento-btn shadow-md shadow-brand-light/20" data-id="${pago.id}">
+                                <i class="ph-bold ph-magic-wand"></i> Generar Fraccionamiento
+                            </button>
+                        </div>
+                        `;
+                    } else if (pago.type === 'inicial_block' && pago.isFraccionado && pago.isGenerated) {
+                        const moneda = document.querySelector('input[name="moneda"]:checked')?.value || 'S/';
+                        row.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-900">Inicial Fraccionada: Adelanto + ${pago.meses} Cuotas</h4>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">Total Inicial: ${moneda} ${formatMoney(pago.monto)}</p>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-light hover:bg-brand-light/10 rounded-lg transition-colors edit-fraccionamiento-btn" data-id="${pago.id}" title="Editar">
+                                    <i class="ph-bold ph-pencil-simple text-base"></i>
+                                </button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors del-btn" data-id="${pago.id}" title="Eliminar bloque">
+                                    <i class="ph-bold ph-trash text-base"></i>
+                                </button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors toggle-cuotas-btn" data-id="${pago.id}" title="Ver cuotas">
+                                    <i class="ph-bold ph-caret-down text-base transition-transform ${pago.isOpen ? 'rotate-180' : ''}"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 space-y-1.5 ${pago.isOpen ? 'block' : 'hidden'} border-t border-gray-100 pt-3">
+                            ${pago.cuotas.map(c => `
+                                <div class="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)] gap-2 items-center bg-gray-50 px-3 py-2 rounded-lg text-xs border border-gray-100">
+                                    <span class="font-semibold text-gray-700 truncate" title="${c.desc}">${c.desc}</span>
+                                    <input type="date" class="cuota-fecha-input bg-white border border-gray-200 px-2 py-1.5 rounded outline-none focus:border-brand-light text-gray-600 font-medium w-full" data-pago-id="${pago.id}" data-cuota-id="${c.id}" value="${c.fecha}">
+                                    <div class="flex items-center gap-1 justify-end w-full">
+                                        <span class="font-bold text-brand-dark">${moneda}</span>
+                                        <input type="number" class="cuota-monto-input bg-white border border-gray-200 px-2 py-1.5 rounded w-full max-w-[6rem] text-right outline-none focus:border-brand-light font-bold text-brand-dark" data-pago-id="${pago.id}" data-cuota-id="${c.id}" value="${c.monto}">
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        `;
+                    } else if (pago.type === 'cuota_block' && !pago.isGenerated) {
+                        row.innerHTML = `
+                        <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-start">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Concepto</label>
+                                <select class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none desc-input font-medium cursor-pointer" data-id="${pago.id}">
+                                    <option value="SEPARACIÓN" ${pago.desc === 'SEPARACIÓN' ? 'selected' : ''}>SEPARACIÓN</option>
+                                    <option value="INICIAL" ${pago.desc === 'INICIAL' ? 'selected' : ''}>INICIAL</option>
+                                    <option value="CUOTA DEL RESTANTE" ${pago.desc === 'CUOTA DEL RESTANTE' ? 'selected' : ''}>CUOTA DEL RESTANTE</option>
+                                </select>
+                            </div>
+                            <div class="pt-6">
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors del-btn" data-id="${pago.id}" title="Eliminar fila">
+                                    <i class="ph-bold ph-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 mt-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Monto a Financiar</label>
+                                <input type="number" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none monto-financiar-input font-semibold" placeholder="0.00" value="${pago.montoTotal || ''}" data-id="${pago.id}">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">N° de Meses</label>
+                                <input type="number" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none meses-input" placeholder="12" value="${pago.meses || ''}" data-id="${pago.id}">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Día de Pago</label>
+                                <input type="number" min="1" max="31" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none dia-pago-input" placeholder="15" value="${pago.diaPago || ''}" data-id="${pago.id}">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="w-full text-xs font-bold text-brand-light hover:text-white bg-brand-light/10 hover:bg-brand-light py-2 rounded-lg transition-colors flex items-center justify-center gap-1.5 generar-cuotas-btn" data-id="${pago.id}">
+                                <i class="ph-bold ph-calculator"></i> Generar Cuotas
+                            </button>
+                        </div>
+                        `;
+                    } else if ((pago.type === 'cuota_block' || pago.type === 'inicial_block') && pago.isGenerated) {
+                        const moneda = document.querySelector('input[name="moneda"]:checked')?.value || 'S/';
+                        row.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-900">${pago.meses} Cuotas de ${moneda} ${formatMoney(pago.montoTotal / pago.meses)} los días ${pago.diaPago}</h4>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">Total: ${moneda} ${formatMoney(pago.montoTotal)}</p>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-light hover:bg-brand-light/10 rounded-lg transition-colors edit-cuotas-btn" data-id="${pago.id}" title="Editar">
+                                    <i class="ph-bold ph-pencil-simple text-base"></i>
+                                </button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors del-btn" data-id="${pago.id}" title="Eliminar bloque">
+                                    <i class="ph-bold ph-trash text-base"></i>
+                                </button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors toggle-cuotas-btn" data-id="${pago.id}" title="Ver cuotas">
+                                    <i class="ph-bold ph-caret-down text-base transition-transform ${pago.isOpen ? 'rotate-180' : ''}"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 space-y-1.5 ${pago.isOpen ? 'block' : 'hidden'} border-t border-gray-100 pt-3">
+                            ${pago.cuotas.map(c => `
+                                <div class="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)] gap-2 items-center bg-gray-50 px-3 py-2 rounded-lg text-xs border border-gray-100">
+                                    <span class="font-semibold text-gray-700 truncate" title="${c.desc}">${c.desc}</span>
+                                    <input type="date" class="cuota-fecha-input bg-white border border-gray-200 px-2 py-1.5 rounded outline-none focus:border-brand-light text-gray-600 font-medium w-full" data-pago-id="${pago.id}" data-cuota-id="${c.id}" value="${c.fecha}">
+                                    <div class="flex items-center gap-1 justify-end w-full">
+                                        <span class="font-bold text-brand-dark">${moneda}</span>
+                                        <input type="number" class="cuota-monto-input bg-white border border-gray-200 px-2 py-1.5 rounded w-full max-w-[6rem] text-right outline-none focus:border-brand-light font-bold text-brand-dark" data-pago-id="${pago.id}" data-cuota-id="${c.id}" value="${c.monto}">
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        `;
+                    }
                     container.appendChild(row);
                 });
 
-                // Event Listeners for Dynamic Row Inputs
+                attachRowEventListeners();
+            };
+
+            const attachRowEventListeners = () => {
                 container.querySelectorAll('.desc-input').forEach(el => el.addEventListener('change', (e) => {
-                    state.pagos.find(p => p.id == e.target.dataset.id).desc = e.target.value;
+                    const pago = state.pagos.find(p => p.id == e.target.dataset.id);
+                    pago.desc = e.target.value;
+                    if (pago.desc === 'CUOTA DEL RESTANTE') {
+                        pago.type = 'cuota_block';
+                        pago.montoTotal = pago.monto || 0;
+                        pago.meses = 12;
+                        pago.diaPago = 15;
+                        pago.isGenerated = false;
+                        pago.isOpen = false;
+                        pago.cuotas = [];
+                    } else if (pago.desc === 'INICIAL') {
+                        pago.type = 'inicial_block';
+                        pago.isFraccionado = false;
+                        if (!pago.monto) pago.monto = 0;
+                        if (!pago.fecha) pago.fecha = today;
+                        pago.adelanto = 0;
+                        pago.meses = 2;
+                        pago.diaPago = 15;
+                        pago.isGenerated = false;
+                        pago.isOpen = false;
+                        pago.cuotas = [];
+                    } else {
+                        pago.type = 'normal';
+                        if (!pago.monto) pago.monto = 0;
+                        if (!pago.fecha) pago.fecha = today;
+                    }
+                    renderRows();
                     updatePreview();
                 }));
+                
                 container.querySelectorAll('.monto-input').forEach(el => el.addEventListener('input', (e) => {
                     state.pagos.find(p => p.id == e.target.dataset.id).monto = parseFloat(e.target.value) || 0;
                     updatePreview();
                 }));
+                
                 container.querySelectorAll('.fecha-input').forEach(el => el.addEventListener('input', (e) => {
                     state.pagos.find(p => p.id == e.target.dataset.id).fecha = e.target.value;
                     updatePreview();
                 }));
+                
                 container.querySelectorAll('.indef-input').forEach(el => el.addEventListener('change', (e) => {
                     state.pagos.find(p => p.id == e.target.dataset.id).indefinida = e.target.checked;
                     renderRows();
                     updatePreview();
                 }));
+                
                 container.querySelectorAll('.del-btn').forEach(el => el.addEventListener('click', (e) => {
-                    state.pagos = state.pagos.filter(p => p.id != e.currentTarget.dataset.id);
+                    const id = e.currentTarget.dataset.id;
+                    state.pagos = state.pagos.filter(p => p.id != id);
                     renderRows();
                     updatePreview();
+                }));
+
+                // INICIAL FRACCIONAMIENTO SPECIFIC
+                container.querySelectorAll('.fraccionar-input').forEach(el => el.addEventListener('change', (e) => {
+                    const pago = state.pagos.find(p => p.id == e.target.dataset.id);
+                    pago.isFraccionado = e.target.checked;
+                    if (!pago.isFraccionado) pago.isGenerated = false;
+                    renderRows();
+                    updatePreview();
+                }));
+
+                container.querySelectorAll('.adelanto-input').forEach(el => el.addEventListener('input', (e) => {
+                    const pago = state.pagos.find(p => p.id == e.target.dataset.id);
+                    pago.adelanto = parseFloat(e.target.value) || 0;
+                    const saldo = Math.max(0, (pago.monto || 0) - pago.adelanto);
+                    
+                    const saldoInput = e.target.closest('.grid').querySelector('.saldo-readonly');
+                    if (saldoInput) {
+                        const moneda = document.querySelector('input[name="moneda"]:checked')?.value || 'S/';
+                        saldoInput.value = `${moneda} ${formatMoney(saldo)}`;
+                    }
+                }));
+
+                container.querySelectorAll('.meses-saldo-input').forEach(el => el.addEventListener('input', (e) => {
+                    state.pagos.find(p => p.id == e.target.dataset.id).meses = parseInt(e.target.value, 10) || 0;
+                }));
+
+                container.querySelectorAll('.dia-saldo-input').forEach(el => el.addEventListener('input', (e) => {
+                    let val = parseInt(e.target.value, 10) || 1;
+                    if (val < 1) val = 1;
+                    if (val > 30) val = 30;
+                    state.pagos.find(p => p.id == e.target.dataset.id).diaPago = val;
+                }));
+
+                container.querySelectorAll('.generar-fraccionamiento-btn').forEach(el => el.addEventListener('click', (e) => {
+                    const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
+                    const saldo = Math.max(0, (pago.monto || 0) - (pago.adelanto || 0));
+                    
+                    if (!pago.monto || pago.monto <= 0) return alert('Ingrese un monto total de Inicial válido');
+                    if (saldo < 0) return alert('El adelanto no puede ser mayor al monto total');
+                    if (!pago.meses || pago.meses <= 0) return alert('Ingrese un número de cuotas válido');
+                    
+                    pago.isGenerated = true;
+                    pago.isOpen = true;
+                    pago.cuotas = [];
+                    
+                    pago.cuotas.push({
+                        id: `${pago.id}-adelanto`,
+                        desc: `INICIAL (Adelanto)`,
+                        monto: pago.adelanto,
+                        fecha: today
+                    });
+
+                    if (saldo > 0) {
+                        const montoPorCuota = saldo / pago.meses;
+                        const todayDate = new Date();
+                        let currentYear = todayDate.getFullYear();
+                        let currentMonth = todayDate.getMonth() + 1;
+                        
+                        for (let i = 1; i <= pago.meses; i++) {
+                            let calcMonth = currentMonth + i;
+                            let calcYear = currentYear;
+                            while (calcMonth > 12) {
+                                calcMonth -= 12;
+                                calcYear += 1;
+                            }
+                            
+                            let calcDay = pago.diaPago;
+                            let maxDaysInMonth = new Date(calcYear, calcMonth, 0).getDate();
+                            if (calcDay > maxDaysInMonth) calcDay = maxDaysInMonth;
+                            
+                            const calcDateStr = `${calcYear}-${String(calcMonth).padStart(2, '0')}-${String(calcDay).padStart(2, '0')}`;
+                            
+                            pago.cuotas.push({
+                                id: `${pago.id}-saldo-${i}`,
+                                desc: `CUOTA SALDO INICIAL ${i}`,
+                                monto: montoPorCuota,
+                                fecha: calcDateStr
+                            });
+                        }
+                    }
+                    
+                    renderRows();
+                    updatePreview();
+                }));
+
+                container.querySelectorAll('.edit-fraccionamiento-btn').forEach(el => el.addEventListener('click', (e) => {
+                    const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
+                    pago.isGenerated = false;
+                    renderRows();
+                    updatePreview();
+                }));
+
+                // CUOTAS SPECIFIC
+                container.querySelectorAll('.monto-financiar-input').forEach(el => el.addEventListener('input', (e) => {
+                    state.pagos.find(p => p.id == e.target.dataset.id).montoTotal = parseFloat(e.target.value) || 0;
+                }));
+                
+                container.querySelectorAll('.meses-input').forEach(el => el.addEventListener('input', (e) => {
+                    state.pagos.find(p => p.id == e.target.dataset.id).meses = parseInt(e.target.value, 10) || 0;
+                }));
+                
+                container.querySelectorAll('.dia-pago-input').forEach(el => el.addEventListener('input', (e) => {
+                    let val = parseInt(e.target.value, 10) || 1;
+                    if (val < 1) val = 1;
+                    if (val > 31) val = 31;
+                    state.pagos.find(p => p.id == e.target.dataset.id).diaPago = val;
+                }));
+                
+                container.querySelectorAll('.generar-cuotas-btn').forEach(el => el.addEventListener('click', (e) => {
+                    const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
+                    if (!pago.montoTotal || pago.montoTotal <= 0) return alert('Ingrese un monto válido');
+                    if (!pago.meses || pago.meses <= 0) return alert('Ingrese un número de meses válido');
+                    
+                    pago.isGenerated = true;
+                    pago.isOpen = true; // open accordion by default
+                    pago.cuotas = [];
+                    
+                    const montoPorCuota = pago.montoTotal / pago.meses;
+                    
+                    const todayDate = new Date();
+                    let currentYear = todayDate.getFullYear();
+                    let currentMonth = todayDate.getMonth() + 1; // 1-12
+                    
+                    for (let i = 1; i <= pago.meses; i++) {
+                        let calcMonth = currentMonth + i;
+                        let calcYear = currentYear;
+                        while (calcMonth > 12) {
+                            calcMonth -= 12;
+                            calcYear += 1;
+                        }
+                        
+                        let calcDay = pago.diaPago;
+                        let maxDaysInMonth = new Date(calcYear, calcMonth, 0).getDate();
+                        if (calcDay > maxDaysInMonth) calcDay = maxDaysInMonth;
+                        
+                        const calcDateStr = `${calcYear}-${String(calcMonth).padStart(2, '0')}-${String(calcDay).padStart(2, '0')}`;
+                        
+                        pago.cuotas.push({
+                            id: `${pago.id}-${i}`,
+                            desc: `Cuota ${i}`,
+                            monto: montoPorCuota,
+                            fecha: calcDateStr
+                        });
+                    }
+                    
+                    renderRows();
+                    updatePreview();
+                }));
+                
+                container.querySelectorAll('.edit-cuotas-btn').forEach(el => el.addEventListener('click', (e) => {
+                    const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
+                    pago.isGenerated = false;
+                    renderRows();
+                    updatePreview();
+                }));
+                
+                container.querySelectorAll('.toggle-cuotas-btn').forEach(el => el.addEventListener('click', (e) => {
+                    const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
+                    pago.isOpen = !pago.isOpen;
+                    renderRows();
+                }));
+
+                // EDITABLE CUOTAS SPECIFIC
+                container.querySelectorAll('.cuota-monto-input').forEach(el => el.addEventListener('input', (e) => {
+                    const pagoId = e.target.dataset.pagoId;
+                    const cuotaId = e.target.dataset.cuotaId;
+                    const pago = state.pagos.find(p => p.id == pagoId);
+                    if (pago) {
+                        const cuota = pago.cuotas.find(c => c.id === cuotaId);
+                        if (cuota) {
+                            cuota.monto = parseFloat(e.target.value) || 0;
+                            updatePreview();
+                        }
+                    }
+                }));
+
+                container.querySelectorAll('.cuota-fecha-input').forEach(el => el.addEventListener('input', (e) => {
+                    const pagoId = e.target.dataset.pagoId;
+                    const cuotaId = e.target.dataset.cuotaId;
+                    const pago = state.pagos.find(p => p.id == pagoId);
+                    if (pago) {
+                        const cuota = pago.cuotas.find(c => c.id === cuotaId);
+                        if (cuota) {
+                            cuota.fecha = e.target.value;
+                            updatePreview();
+                        }
+                    }
                 }));
             };
 
@@ -549,7 +944,10 @@
             });
 
             document.querySelectorAll('input[name="moneda"]').forEach(el => {
-                el.addEventListener('change', updatePreview);
+                el.addEventListener('change', () => {
+                    renderRows();
+                    updatePreview();
+                });
             });
 
             function updatePreview() {
@@ -576,10 +974,11 @@
 
                 // Update static preview nodes
                 document.getElementById('prevAsesor').textContent = asesorNombre || '-';
-                document.getElementById('prevAsesorCorreo').textContent = asesorCorreo;
+                document.getElementById('prevAsesorCorreo').textContent = asesorCorreo || '-';
                 document.getElementById('prevCliente').textContent = cliente || '-';
                 document.getElementById('prevTelefono').textContent = telefono ? `${codPais} ${telefono}` : '-';
                 document.getElementById('prevFecha').textContent = formatDate(fecha) || '-';
+                document.getElementById('prevFechaHeader').textContent = formatDate(fecha) || '-';
                 document.getElementById('prevArea').textContent = area || '-';
                 document.getElementById('prevEtapa').textContent = etapa || '-';
                 document.getElementById('prevMz').textContent = mz || '-';
@@ -593,18 +992,32 @@
                 let total = 0;
 
                 state.pagos.forEach(pago => {
-                    const tr = document.createElement('tr');
+                    if ((pago.type === 'cuota_block' || pago.type === 'inicial_block') && pago.isGenerated) {
+                        pago.cuotas.forEach(cuota => {
+                            const tr = document.createElement('tr');
+                            const displayFecha = formatDate(cuota.fecha);
+                            const displayMonto = formatMoney(cuota.monto);
+                            tr.innerHTML = `
+                                <td class="py-3 px-2 text-sm font-semibold text-gray-800">${cuota.desc}</td>
+                                <td class="py-3 px-2 text-sm text-gray-500 font-medium">${displayFecha}</td>
+                                <td class="py-3 px-2 text-sm text-right font-bold text-gray-900">${displayMonto}</td>
+                            `;
+                            tbody.appendChild(tr);
+                            total += cuota.monto;
+                        });
+                    } else if (pago.type === 'normal' || !pago.type || (pago.type === 'inicial_block' && !pago.isGenerated)) {
+                        const tr = document.createElement('tr');
+                        const displayFecha = pago.indefinida ? 'Fecha Indefinida' : formatDate(pago.fecha) || '-';
+                        const displayMonto = formatMoney(pago.monto || 0);
 
-                    const displayFecha = pago.indefinida ? 'Fecha Indefinida' : formatDate(pago.fecha) || '-';
-                    const displayMonto = formatMoney(pago.monto);
-
-                    tr.innerHTML = `
-                <td class="py-3 px-2 text-sm font-semibold text-gray-800">${pago.desc}</td>
-                <td class="py-3 px-2 text-sm text-gray-500 font-medium">${displayFecha}</td>
-                <td class="py-3 px-2 text-sm text-right font-bold text-gray-900">${displayMonto}</td>
-            `;
-                    tbody.appendChild(tr);
-                    total += pago.monto;
+                        tr.innerHTML = `
+                            <td class="py-3 px-2 text-sm font-semibold text-gray-800">${pago.desc}</td>
+                            <td class="py-3 px-2 text-sm text-gray-500 font-medium">${displayFecha}</td>
+                            <td class="py-3 px-2 text-sm text-right font-bold text-gray-900">${displayMonto}</td>
+                        `;
+                        tbody.appendChild(tr);
+                        total += (pago.monto || 0);
+                    }
                 });
 
                 // Update totals
@@ -622,7 +1035,7 @@
                     margin: 0,
                     filename: `Cotizacion_${clienteName}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
@@ -630,56 +1043,200 @@
                 const originalText = btn.innerHTML;
                 btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Generando...';
                 btn.classList.add('opacity-80', 'cursor-not-allowed');
+                btn.disabled = true;
 
-                html2pdf().set(opt).from(element).save().then(() => {
+                try {
+                    html2pdf().set(opt).from(element).save().then(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                        btn.disabled = false;
+                    }).catch((error) => {
+                        console.error("Error generating PDF", error);
+                        alert("El PDF funcionará correctamente cuando se despliegue en el servidor web (Vercel).");
+                        btn.innerHTML = originalText;
+                        btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                        btn.disabled = false;
+                    });
+                } catch (err) {
+                    console.error("Error try/catch", err);
+                    alert("El PDF funcionará correctamente cuando se despliegue en el servidor web (Vercel).");
                     btn.innerHTML = originalText;
                     btn.classList.remove('opacity-80', 'cursor-not-allowed');
-                });
+                    btn.disabled = false;
+                }
             });
 
-            // --- Export Excel (SheetJS) ---
+            // --- Export Excel (xlsx-js-style) ---
             document.getElementById('btnExcel').addEventListener('click', () => {
                 const cliente = document.getElementById('cliente').value || 'Cliente';
                 const wb = XLSX.utils.book_new();
 
                 const moneda = document.querySelector('input[name="moneda"]:checked').value;
-                const total = state.pagos.reduce((sum, p) => sum + p.monto, 0);
+                const total = state.pagos.reduce((sum, p) => {
+                    if ((p.type === 'cuota_block' || p.type === 'inicial_block') && p.isGenerated) {
+                        return sum + p.cuotas.reduce((cSum, c) => cSum + c.monto, 0);
+                    }
+                    if (p.type === 'normal' || !p.type) {
+                        return sum + (p.monto || 0);
+                    }
+                    return sum;
+                }, 0);
+
+                // Get asesor name without email for the sheet
+                const asesorVal = document.getElementById('asesor').value;
+                let asesorNombre = asesorVal;
+                let asesorCorreo = "-";
+                if (asesorVal.includes('(') && asesorVal.endsWith(')')) {
+                    const parts = asesorVal.split('(');
+                    asesorNombre = parts[0].trim();
+                    asesorCorreo = parts[1].replace(')', '').trim();
+                }
+
+                // Definimos los estilos
+                const titleStyle = {
+                    font: { bold: true, color: { rgb: "FFFFFF" }, sz: 16 },
+                    fill: { fgColor: { rgb: "D81B60" } }, // Magenta
+                    alignment: { horizontal: "center", vertical: "center" }
+                };
+
+                const headerStyle = {
+                    font: { bold: true, color: { rgb: "000000" } },
+                    fill: { fgColor: { rgb: "F3F4F6" } }, // Light gray
+                    border: {
+                        top: { style: "thin", color: { rgb: "CCCCCC" } },
+                        bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+                        left: { style: "thin", color: { rgb: "CCCCCC" } },
+                        right: { style: "thin", color: { rgb: "CCCCCC" } }
+                    },
+                    alignment: { vertical: "center" }
+                };
+
+                const cellStyle = {
+                    border: {
+                        top: { style: "thin", color: { rgb: "CCCCCC" } },
+                        bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+                        left: { style: "thin", color: { rgb: "CCCCCC" } },
+                        right: { style: "thin", color: { rgb: "CCCCCC" } }
+                    },
+                    alignment: { vertical: "center" }
+                };
+
+                const tableHeaderStyle = {
+                    font: { bold: true, color: { rgb: "FFFFFF" } },
+                    fill: { fgColor: { rgb: "D81B60" } }, // Magenta
+                    border: {
+                        top: { style: "thin", color: { rgb: "D81B60" } },
+                        bottom: { style: "thin", color: { rgb: "D81B60" } },
+                        left: { style: "thin", color: { rgb: "D81B60" } },
+                        right: { style: "thin", color: { rgb: "D81B60" } }
+                    },
+                    alignment: { horizontal: "center", vertical: "center" }
+                };
+                
+                const tableCellStyle = {
+                    border: {
+                        top: { style: "thin", color: { rgb: "CCCCCC" } },
+                        bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+                        left: { style: "thin", color: { rgb: "CCCCCC" } },
+                        right: { style: "thin", color: { rgb: "CCCCCC" } }
+                    },
+                    alignment: { vertical: "center" }
+                };
+                
+                const tableMoneyStyle = {
+                    ...tableCellStyle,
+                    numFmt: `"${moneda}" #,##0.00`,
+                    alignment: { horizontal: "right", vertical: "center" }
+                };
+                
+                const totalStyle = {
+                    font: { bold: true, color: { rgb: "000000" }, sz: 12 },
+                    fill: { fgColor: { rgb: "FFF2F2" } },
+                    border: {
+                        top: { style: "medium", color: { rgb: "D81B60" } },
+                        bottom: { style: "medium", color: { rgb: "D81B60" } },
+                        left: { style: "medium", color: { rgb: "D81B60" } },
+                        right: { style: "medium", color: { rgb: "D81B60" } }
+                    },
+                    numFmt: `"${moneda}" #,##0.00`,
+                    alignment: { horizontal: "right", vertical: "center" }
+                };
+                
+                const totalLabelStyle = {
+                    font: { bold: true, color: { rgb: "000000" }, sz: 12 },
+                    fill: { fgColor: { rgb: "FFF2F2" } },
+                    border: {
+                        top: { style: "medium", color: { rgb: "D81B60" } },
+                        bottom: { style: "medium", color: { rgb: "D81B60" } },
+                        left: { style: "medium", color: { rgb: "D81B60" } },
+                        right: { style: "medium", color: { rgb: "D81B60" } }
+                    },
+                    alignment: { horizontal: "right", vertical: "center" }
+                };
 
                 // Build array of arrays for the sheet
                 const data = [
-                    ["TECH B2B REAL ESTATE"],
-                    ["COTIZACIÓN OFICIAL"],
-                    [""],
-                    ["DATOS DEL CLIENTE"],
-                    ["Asesor a cargo", document.getElementById('asesor').value],
-                    ["Nombre del Cliente", cliente],
-                    ["Teléfono de Contacto", `${document.getElementById('codPais').value} ${document.getElementById('telefono').value}`],
-                    ["Fecha de Emisión", document.getElementById('fecha').value],
-                    [""],
-                    ["DETALLES DEL INMUEBLE"],
-                    ["Etapa", document.getElementById('etapa').value],
-                    ["Manzana", document.getElementById('mz').value],
-                    ["Lote", document.getElementById('lote').value],
-                    ["Área (m2)", document.getElementById('area').value],
-                    [""],
-                    ["PLAN DE INVERSIÓN", "", `Moneda: ${moneda}`],
-                    ["Concepto", "Fecha Programada", "Monto"]
+                    [{ v: "MEGAPROYECTO PACHAMAMA - COTIZACIÓN", t: "s", s: titleStyle }, {v:"", s:titleStyle}, {v:"", s:titleStyle}],
+                    ["", "", ""],
+                    [{ v: "DATOS DEL CLIENTE", t: "s", s: { font: { bold: true, sz: 12 } } }, "", ""],
+                    [{ v: "Asesor a cargo", s: headerStyle }, { v: asesorNombre, s: cellStyle }, { v: "", s: cellStyle }],
+                    [{ v: "Correo de Asesor", s: headerStyle }, { v: asesorCorreo, s: cellStyle }, { v: "", s: cellStyle }],
+                    [{ v: "Nombre del Cliente", s: headerStyle }, { v: cliente, s: cellStyle }, { v: "", s: cellStyle }],
+                    [{ v: "Teléfono de Contacto", s: headerStyle }, { v: `${document.getElementById('codPais').value} ${document.getElementById('telefono').value}`, s: cellStyle }, { v: "", s: cellStyle }],
+                    [{ v: "Fecha de Emisión", s: headerStyle }, { v: document.getElementById('fecha').value, s: cellStyle }, { v: "", s: cellStyle }],
+                    ["", "", ""],
+                    [{ v: "DETALLES DEL INMUEBLE", t: "s", s: { font: { bold: true, sz: 12 } } }, "", ""],
+                    [{ v: "Etapa", s: headerStyle }, { v: document.getElementById('etapa').value, s: cellStyle }, { v: "", s: cellStyle }],
+                    [{ v: "Manzana", s: headerStyle }, { v: document.getElementById('mz').value, s: cellStyle }, { v: "", s: cellStyle }],
+                    [{ v: "Lote", s: headerStyle }, { v: document.getElementById('lote').value, s: cellStyle }, { v: "", s: cellStyle }],
+                    [{ v: "Área (m2)", s: headerStyle }, { v: document.getElementById('area').value, s: cellStyle }, { v: "", s: cellStyle }],
+                    ["", "", ""],
+                    [{ v: "PLAN DE INVERSIÓN", t: "s", s: { font: { bold: true, sz: 12 } } }, "", ""],
+                    [{ v: "Concepto", s: tableHeaderStyle }, { v: "Fecha Programada", s: tableHeaderStyle }, { v: "Monto", s: tableHeaderStyle }]
                 ];
 
                 state.pagos.forEach(p => {
-                    data.push([
-                        p.desc,
-                        p.indefinida ? 'Indefinida' : p.fecha,
-                        p.monto
-                    ]);
+                    if ((p.type === 'cuota_block' || p.type === 'inicial_block') && p.isGenerated) {
+                        p.cuotas.forEach(cuota => {
+                            data.push([
+                                { v: cuota.desc, s: tableCellStyle },
+                                { v: cuota.fecha, s: { ...tableCellStyle, alignment: { horizontal: "center" } } },
+                                { v: cuota.monto, t: "n", s: tableMoneyStyle }
+                            ]);
+                        });
+                    } else if (p.type === 'normal' || !p.type || (p.type === 'inicial_block' && !p.isGenerated)) {
+                        data.push([
+                            { v: p.desc, s: tableCellStyle },
+                            { v: p.indefinida ? 'Indefinida' : p.fecha, s: { ...tableCellStyle, alignment: { horizontal: "center" } } },
+                            { v: p.monto, t: "n", s: tableMoneyStyle }
+                        ]);
+                    }
                 });
 
-                data.push(["", "INVERSIÓN TOTAL", total]);
+                data.push([{ v: "INVERSIÓN TOTAL", s: totalLabelStyle }, { v: "", s: totalLabelStyle }, { v: total, t: "n", s: totalStyle }]);
 
                 const ws = XLSX.utils.aoa_to_sheet(data);
 
+                // Merges
+                ws['!merges'] = [
+                    { s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }, // Title
+                    { s: { r: 2, c: 0 }, e: { r: 2, c: 2 } }, // Datos del Cliente
+                    { s: { r: 3, c: 1 }, e: { r: 3, c: 2 } }, // Asesor
+                    { s: { r: 4, c: 1 }, e: { r: 4, c: 2 } }, // Correo
+                    { s: { r: 5, c: 1 }, e: { r: 5, c: 2 } }, // Cliente
+                    { s: { r: 6, c: 1 }, e: { r: 6, c: 2 } }, // Teléfono
+                    { s: { r: 7, c: 1 }, e: { r: 7, c: 2 } }, // Fecha
+                    { s: { r: 9, c: 0 }, e: { r: 9, c: 2 } }, // Detalles del Inmueble
+                    { s: { r: 10, c: 1 }, e: { r: 10, c: 2 } }, // Etapa
+                    { s: { r: 11, c: 1 }, e: { r: 11, c: 2 } }, // Manzana
+                    { s: { r: 12, c: 1 }, e: { r: 12, c: 2 } }, // Lote
+                    { s: { r: 13, c: 1 }, e: { r: 13, c: 2 } }, // Área
+                    { s: { r: 15, c: 0 }, e: { r: 15, c: 2 } }, // Plan de Inversión
+                    { s: { r: data.length - 1, c: 0 }, e: { r: data.length - 1, c: 1 } } // Total label
+                ];
+                
                 // Auto-size columns slightly
-                ws['!cols'] = [{ wch: 25 }, { wch: 25 }, { wch: 15 }];
+                ws['!cols'] = [{ wch: 25 }, { wch: 25 }, { wch: 20 }];
 
                 XLSX.utils.book_append_sheet(wb, ws, "Cotización");
                 XLSX.writeFile(wb, `Cotizacion_${cliente.replace(/\s+/g, '_')}.xlsx`);
@@ -693,7 +1250,16 @@
                 const etapa = document.getElementById('etapa').value || '-';
                 const area = document.getElementById('area').value || '-';
                 const moneda = document.querySelector('input[name="moneda"]:checked').value;
-                const total = formatMoney(state.pagos.reduce((sum, p) => sum + p.monto, 0));
+                const totalValue = state.pagos.reduce((sum, p) => {
+                    if ((p.type === 'cuota_block' || p.type === 'inicial_block') && p.isGenerated) {
+                        return sum + p.cuotas.reduce((cSum, c) => cSum + c.monto, 0);
+                    }
+                    if (p.type === 'normal' || !p.type) {
+                        return sum + (p.monto || 0);
+                    }
+                    return sum;
+                }, 0);
+                const total = formatMoney(totalValue);
 
                 let text = `Hola *${cliente}* 👋,\n\nTe adjunto el resumen de la cotización del inmueble de tu interés:\n\n`;
                 text += `📍 *Ubicación:* Etapa ${etapa}, Mz ${mz}, Lote ${lote}\n`;
@@ -701,8 +1267,14 @@
                 text += `💰 *Plan de Inversión (Total: ${moneda} ${total}):*\n`;
 
                 state.pagos.forEach(p => {
-                    const fechaStr = p.indefinida ? 'Fecha Indefinida' : formatDate(p.fecha);
-                    text += `• ${p.desc}: ${moneda} ${formatMoney(p.monto)} (${fechaStr})\n`;
+                    if ((p.type === 'cuota_block' || p.type === 'inicial_block') && p.isGenerated) {
+                        p.cuotas.forEach(cuota => {
+                            text += `• ${cuota.desc}: ${moneda} ${formatMoney(cuota.monto)} (${formatDate(cuota.fecha)})\n`;
+                        });
+                    } else if (p.type === 'normal' || !p.type || (p.type === 'inicial_block' && !p.isGenerated)) {
+                        const fechaStr = p.indefinida ? 'Fecha Indefinida' : formatDate(p.fecha);
+                        text += `• ${p.desc}: ${moneda} ${formatMoney(p.monto)} (${fechaStr})\n`;
+                    }
                 });
 
                 text += `\nQuedo atento a tus comentarios para cualquier consulta.\n¡Saludos!`;

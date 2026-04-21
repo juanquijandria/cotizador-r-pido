@@ -1034,46 +1034,47 @@
                 const element = document.getElementById('pdfContent');
                 const clienteName = document.getElementById('cliente').value.replace(/\s+/g, '_') || 'Cliente';
 
-                const opt = {
-                    margin: [5, 0, 10, 0],
-                    filename: `Cotizacion_${clienteName}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false, windowWidth: 1200 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
                 const btn = document.getElementById('btnPdf');
                 const originalText = btn.innerHTML;
                 btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Generando...';
                 btn.classList.add('opacity-80', 'cursor-not-allowed');
                 btn.disabled = true;
 
-                // Asegurar ancho fijo para que no se corte por el overflow del padre
-                const originalWidth = element.style.width;
-                element.style.width = '210mm';
+                const clone = element.cloneNode(true);
+                clone.style.width = '210mm';
+                clone.style.padding = '40px';
+                clone.style.boxSizing = 'border-box';
+                clone.style.background = 'white';
+                clone.style.boxShadow = 'none';
 
-                try {
-                    html2pdf().set(opt).from(element).save().then(() => {
-                        element.style.width = originalWidth;
-                        btn.innerHTML = originalText;
-                        btn.classList.remove('opacity-80', 'cursor-not-allowed');
-                        btn.disabled = false;
-                    }).catch((error) => {
-                        console.error("Error generating PDF", error);
-                        element.style.width = originalWidth;
-                        alert("El PDF funcionará correctamente cuando se despliegue en el servidor web (Vercel).");
-                        btn.innerHTML = originalText;
-                        btn.classList.remove('opacity-80', 'cursor-not-allowed');
-                        btn.disabled = false;
-                    });
-                } catch (err) {
-                    console.error("Error try/catch", err);
-                    element.style.width = originalWidth;
-                    alert("El PDF funcionará correctamente cuando se despliegue en el servidor web (Vercel).");
+                const hiddenContainer = document.createElement('div');
+                hiddenContainer.style.position = 'absolute';
+                hiddenContainer.style.left = '-9999px';
+                hiddenContainer.style.top = '-9999px';
+                hiddenContainer.style.width = '210mm';
+                hiddenContainer.appendChild(clone);
+                document.body.appendChild(hiddenContainer);
+
+                const opt = {
+                    margin: [0, 0, 0, 0],
+                    filename: `Cotizacion_${clienteName}.pdf`,
+                    html2canvas: { scale: 2, useCORS: true, letterRendering: true, windowWidth: 1024 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().from(clone).set(opt).save().then(() => {
+                    document.body.removeChild(hiddenContainer);
                     btn.innerHTML = originalText;
                     btn.classList.remove('opacity-80', 'cursor-not-allowed');
                     btn.disabled = false;
-                }
+                }).catch((error) => {
+                    console.error("Error generating PDF", error);
+                    document.body.removeChild(hiddenContainer);
+                    alert("Ocurrió un error al generar el PDF.");
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                    btn.disabled = false;
+                });
             });
 
             // --- Export Excel (xlsx-js-style) ---

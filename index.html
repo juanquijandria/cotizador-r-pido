@@ -33,11 +33,33 @@
 
     <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Phosphor Icons for a clean, modern look -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
+        @media print {
+            body {
+                visibility: hidden;
+            }
+            #pdfContent, #pdfContent * {
+                visibility: visible;
+            }
+            #pdfContent {
+                position: absolute;
+                left: 0;
+                top: 0;
+                margin: 0;
+                padding: 0;
+                width: 100% !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
         .custom-gradient {
             background: linear-gradient(135deg, #400078, #905CFF);
         }
@@ -90,7 +112,7 @@
     <div class="max-w-[1600px] mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
 
         <!-- LEFT COLUMN: FORM & ACTIONS -->
-        <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6">
+        <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6 no-print">
 
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-50">
@@ -284,7 +306,7 @@
 
             <!-- Scaling Wrapper -->
             <div
-                class="transform scale-[0.6] sm:scale-[0.75] md:scale-[0.85] xl:scale-100 origin-top shadow-2xl shadow-gray-200/50 rounded-sm">
+                class="transform scale-[0.6] sm:scale-[0.75] md:scale-[0.85] xl:scale-100 origin-top shadow-2xl shadow-gray-200/50 rounded-sm print:transform-none print:shadow-none">
 
                 <div id="pdfContent" class="a4-preview p-14 flex flex-col text-sm text-gray-800">
 
@@ -1029,74 +1051,9 @@
                 document.getElementById('totalMontoForm').textContent = `${moneda} ${displayTotal}`;
             }
 
-            // --- Export PDF (html2pdf) ---
+            // --- Export PDF (Nativo) ---
             document.getElementById('btnPdf').addEventListener('click', () => {
-                // Usamos 'pdfContent' que es el ID actual del preview en el HTML
-                const element = document.getElementById('pdfContent');
-                const clienteName = document.getElementById('cliente').value.replace(/\s+/g, '_') || 'Cliente';
-
-                const btn = document.getElementById('btnPdf');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Generando...';
-                btn.classList.add('opacity-80', 'cursor-not-allowed');
-                btn.disabled = true;
-
-                // 1. Congelar el diseño (Pre-procesamiento): Guardar estilos originales
-                const originalStyles = {
-                    width: element.style.width,
-                    maxWidth: element.style.maxWidth,
-                    overflow: element.style.overflow
-                };
-
-                // 2. Aplicar forzosamente al element
-                element.style.setProperty('width', '800px', 'important');
-                element.style.setProperty('max-width', '800px', 'important');
-                element.style.setProperty('overflow', 'visible', 'important');
-
-                // 3. Buscar contenedor padre y quitar overflow temporalmente
-                const parentScroll = element.closest('.overflow-x-auto') || element.closest('.overflow-hidden');
-                let removedClasses = [];
-                if (parentScroll) {
-                    if (parentScroll.classList.contains('overflow-x-auto')) {
-                        parentScroll.classList.remove('overflow-x-auto');
-                        removedClasses.push('overflow-x-auto');
-                    }
-                    if (parentScroll.classList.contains('overflow-hidden')) {
-                        parentScroll.classList.remove('overflow-hidden');
-                        removedClasses.push('overflow-hidden');
-                    }
-                }
-
-                // 4. Configuración a prueba de balas
-                const opt = {
-                    margin: [10, 10, 10, 10],
-                    filename: `Cotizacion_${clienteName}.pdf`,
-                    html2canvas: { scale: 2, useCORS: true, windowWidth: 800, scrollY: 0, letterRendering: true },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
-                // 5. Generación y Restauración
-                html2pdf().set(opt).from(element).save().finally(() => {
-                    // RESTAURAR INMEDIATAMENTE estilos originales
-                    if (originalStyles.width) element.style.width = originalStyles.width;
-                    else element.style.removeProperty('width');
-
-                    if (originalStyles.maxWidth) element.style.maxWidth = originalStyles.maxWidth;
-                    else element.style.removeProperty('max-width');
-
-                    if (originalStyles.overflow) element.style.overflow = originalStyles.overflow;
-                    else element.style.removeProperty('overflow');
-
-                    // Restaurar clases de overflow al padre
-                    if (parentScroll && removedClasses.length > 0) {
-                        removedClasses.forEach(cls => parentScroll.classList.add(cls));
-                    }
-
-                    // Regresar el botón a su estado normal
-                    btn.innerHTML = originalText;
-                    btn.classList.remove('opacity-80', 'cursor-not-allowed');
-                    btn.disabled = false;
-                });
+                window.print();
             });
 
             // --- Export Excel (xlsx-js-style) ---

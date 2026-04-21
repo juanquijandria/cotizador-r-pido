@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizador Rápido - Tech B2B</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#905CFF',
+                            dark: '#400078',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Phosphor Icons for a clean, modern look -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        .custom-gradient {
+            background: linear-gradient(135deg, #400078, #905CFF);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #400078, #905CFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* A4 Page Styling for Live Preview */
+        .a4-preview {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        /* Custom minimal scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Remove default number input arrows */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen">
+
+    <div class="max-w-[1600px] mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+
+        <!-- LEFT COLUMN: FORM & ACTIONS -->
+        <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6">
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-50">
+                    <div
+                        class="w-10 h-10 rounded-xl custom-gradient flex items-center justify-center text-white shadow-lg shadow-brand-light/20">
+                        <i class="ph-bold ph-lightning text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900 leading-tight">Cotizador Rápido</h1>
+                        <p class="text-xs text-gray-400 font-medium tracking-wide">TECH B2B REAL ESTATE</p>
+                    </div>
+                </div>
+
+                <form id="cotizadorForm" class="space-y-6">
+                    <!-- Asesor -->
+                    <div>
+                        <label
+                            class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Asesor</label>
+                        <input list="asesoresList" id="asesor"
+                            class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-light/50 focus:border-brand-light outline-none transition-all text-sm"
+                            placeholder="Buscar por nombre o correo...">
+                        <datalist id="asesoresList"></datalist>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Cliente -->
+                        <div class="md:col-span-2">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Cliente</label>
+                            <input type="text" id="cliente"
+                                class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-light/50 focus:border-brand-light outline-none transition-all text-sm"
+                                placeholder="Nombre completo">
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="md:col-span-2">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Teléfono</label>
+                            <div class="flex shadow-sm rounded-xl">
+                                <select id="codPais"
+                                    class="px-3 py-2.5 border border-gray-200 border-r-0 rounded-l-xl bg-gray-100 hover:bg-gray-200 focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none text-sm w-28 transition-colors cursor-pointer font-medium">
+                                    <option value="+51">+51 (PE)</option>
+                                    <option value="+52">+52 (MX)</option>
+                                    <option value="+54">+54 (AR)</option>
+                                    <option value="+56">+56 (CL)</option>
+                                    <option value="+57">+57 (CO)</option>
+                                </select>
+                                <input type="number" id="telefono"
+                                    class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-r-xl focus:bg-white focus:ring-2 focus:ring-brand-light/50 focus:border-brand-light outline-none transition-all text-sm"
+                                    placeholder="Número de contacto">
+                            </div>
+                        </div>
+
+                        <!-- Fecha -->
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Fecha</label>
+                            <input type="date" id="fecha"
+                                class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-light/50 focus:border-brand-light outline-none transition-all text-sm text-gray-700 cursor-pointer">
+                        </div>
+
+                        <!-- Moneda -->
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Moneda</label>
+                            <div class="flex gap-4 pt-2.5">
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <div class="relative flex items-center justify-center">
+                                        <input type="radio" name="moneda" value="S/" checked
+                                            class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-brand-light transition-colors cursor-pointer">
+                                        <div
+                                            class="absolute w-2.5 h-2.5 bg-brand-light rounded-full opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-sm font-medium text-gray-700 group-hover:text-brand-dark transition-colors">Soles
+                                        (S/)</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <div class="relative flex items-center justify-center">
+                                        <input type="radio" name="moneda" value="$"
+                                            class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-brand-light transition-colors cursor-pointer">
+                                        <div
+                                            class="absolute w-2.5 h-2.5 bg-brand-light rounded-full opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-sm font-medium text-gray-700 group-hover:text-brand-dark transition-colors">Dólares
+                                        ($)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 pb-2">
+                        <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Datos del Inmueble</h3>
+
+                    <div class="grid grid-cols-2 gap-5">
+                        <!-- Área -->
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Área
+                                (m²)</label>
+                            <div class="relative">
+                                <input type="number" id="area"
+                                    class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-light/50 focus:border-brand-light outline-none transition-all text-sm"
+                                    placeholder="0.00">
+                            </div>
+                        </div>
+                        <!-- Etapa -->
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Etapa</label>
+                            <input type="text" id="etapa" maxlength="30"
+                                class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-light/50 focus:border-brand-light outline-none transition-all text-sm"
+                                placeholder="Ej. Etapa 1">
+                        </div>
+                        <!-- Mz -->
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Manzana
+                                (Mz)</label>
+                            <input type="text" id="mz" maxlength="30"
+                                class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-light/50 focus:border-brand-light outline-none transition-all text-sm"
+                                placeholder="Ej. A">
+                        </div>
+                        <!-- Lote -->
+                        <div>
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Lote</label>
+                            <input type="text" id="lote" maxlength="30"
+                                class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-light/50 focus:border-brand-light outline-none transition-all text-sm"
+                                placeholder="Ej. 15">
+                        </div>
+                    </div>
+
+                    <div class="pt-2 pb-2">
+                        <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Plan de Pagos</h3>
+                        <button type="button" id="addRowBtn"
+                            class="text-xs font-bold text-brand-light hover:text-white bg-brand-light/10 hover:bg-brand-light px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
+                            <i class="ph-bold ph-plus"></i> Añadir fila
+                        </button>
+                    </div>
+
+                    <div id="pagosContainer" class="space-y-3">
+                        <!-- Dynamic Rows Injected Here -->
+                    </div>
+
+                    <div class="bg-gray-900 p-5 rounded-xl flex justify-between items-center shadow-lg mt-4">
+                        <span class="font-medium text-gray-300 text-sm uppercase tracking-wider">Monto Total</span>
+                        <span id="totalMontoForm" class="text-2xl font-bold text-white tracking-tight">S/ 0.00</span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Exportar & Compartir</h3>
+                <div class="flex flex-col gap-3">
+                    <button id="btnPdf"
+                        class="w-full custom-gradient text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-brand-light/30 hover:shadow-brand-light/50 transition-all flex justify-center items-center gap-2 transform hover:-translate-y-0.5">
+                        <i class="ph-bold ph-file-pdf text-xl"></i>
+                        Generar PDF
+                    </button>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="btnExcel"
+                            class="w-full bg-white border-2 border-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-xl hover:border-green-500 hover:text-green-600 transition-colors flex justify-center items-center gap-2">
+                            <i class="ph-bold ph-file-xls text-xl"></i>
+                            Excel
+                        </button>
+                        <button id="btnWsp"
+                            class="w-full bg-white border-2 border-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-xl hover:border-brand-light hover:text-brand-light transition-colors flex justify-center items-center gap-2">
+                            <i class="ph-bold ph-whatsapp-logo text-xl"></i>
+                            Copiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: LIVE PREVIEW -->
+        <div
+            class="lg:col-span-7 xl:col-span-8 flex justify-center lg:justify-start xl:justify-center overflow-x-auto pb-8 pt-4">
+
+            <!-- Scaling Wrapper -->
+            <div
+                class="transform scale-[0.6] sm:scale-[0.75] md:scale-[0.85] xl:scale-100 origin-top shadow-2xl shadow-gray-200/50 rounded-sm">
+
+                <div id="pdfContent" class="a4-preview p-14 flex flex-col text-sm text-gray-800">
+
+                    <!-- HEADER -->
+                    <div class="flex justify-between items-start mb-12 border-b-2 border-gray-100 pb-8">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-16 h-16 rounded-xl custom-gradient flex items-center justify-center text-white">
+                                <i class="ph-fill ph-buildings text-3xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-900 tracking-tight">TECH B2B</h2>
+                                <p class="text-xs text-gray-500 font-medium">REAL ESTATE S.A.C.</p>
+                                <p class="text-[10px] text-gray-400 mt-1">RUC: 20123456789</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <h1 class="text-4xl font-light text-gray-900 tracking-tighter mb-3 uppercase">Cotización
+                            </h1>
+                            <div class="flex gap-2 justify-end text-gray-400 font-medium text-sm items-center">
+                                <span>NRO:</span>
+                                <span class="w-24 border-b border-gray-300 inline-block h-4"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CLIENT DETAILS -->
+                    <div class="grid grid-cols-2 gap-8 mb-10">
+                        <div class="space-y-5">
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold mb-1 uppercase tracking-widest">Cliente
+                                </p>
+                                <p id="prevCliente" class="font-semibold text-lg text-gray-900 min-h-[28px]">-</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold mb-1 uppercase tracking-widest">Teléfono
+                                    de Contacto</p>
+                                <p id="prevTelefono" class="font-medium text-gray-700 min-h-[24px]">-</p>
+                            </div>
+                        </div>
+                        <div class="space-y-5">
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold mb-1 uppercase tracking-widest">Fecha de
+                                    Emisión</p>
+                                <p id="prevFecha" class="font-medium text-gray-700 min-h-[24px]">-</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold mb-1 uppercase tracking-widest">Asesor
+                                    Comercial</p>
+                                <p id="prevAsesor" class="font-semibold text-gray-900 min-h-[24px]">-</p>
+                                <p id="prevAsesorCorreo"
+                                    class="text-xs text-brand-light font-medium min-h-[16px] mt-0.5"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PROPERTY DETAILS -->
+                    <div class="bg-gray-50 rounded-2xl p-6 mb-10 border border-gray-100">
+                        <h3
+                            class="text-[10px] font-bold text-brand-dark mb-4 uppercase tracking-widest flex items-center gap-2">
+                            <i class="ph-fill ph-map-pin"></i> Detalles del Inmueble
+                        </h3>
+                        <div class="grid grid-cols-4 gap-6">
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-semibold">Etapa
+                                </p>
+                                <p id="prevEtapa" class="font-bold text-gray-900 text-lg">-</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-semibold">Manzana
+                                </p>
+                                <p id="prevMz" class="font-bold text-gray-900 text-lg">-</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-semibold">Lote
+                                </p>
+                                <p id="prevLote" class="font-bold text-gray-900 text-lg">-</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-semibold">Área
+                                </p>
+                                <p class="font-bold text-gray-900 text-lg"><span id="prevArea">-</span> <span
+                                        class="text-sm font-medium text-gray-500">m²</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PAYMENT PLAN -->
+                    <div class="mb-auto">
+                        <h3
+                            class="text-[10px] font-bold text-brand-dark mb-4 uppercase tracking-widest flex items-center gap-2">
+                            <i class="ph-fill ph-wallet"></i> Plan de Inversión
+                        </h3>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b-2 border-brand-dark">
+                                    <th
+                                        class="py-3 px-2 font-bold text-[10px] text-brand-dark uppercase tracking-widest w-1/2">
+                                        Descripción</th>
+                                    <th
+                                        class="py-3 px-2 font-bold text-[10px] text-brand-dark uppercase tracking-widest w-1/4">
+                                        Fecha de Pago</th>
+                                    <th
+                                        class="py-3 px-2 font-bold text-[10px] text-brand-dark uppercase tracking-widest w-1/4 text-right">
+                                        Monto (<span class="prevMoneda">S/</span>)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prevPagosTable" class="divide-y divide-gray-100">
+                                <!-- Rows injected via JS -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="border-t-2 border-gray-200">
+                                    <td colspan="2"
+                                        class="py-5 px-2 font-bold text-right text-gray-500 uppercase tracking-wider text-xs">
+                                        Inversión Total:</td>
+                                    <td class="py-5 px-2 font-black text-right text-xl text-gray-900 whitespace-nowrap">
+                                        <span class="prevMoneda text-brand-light">S/</span> <span
+                                            id="prevTotal">0.00</span></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div
+                        class="mt-12 pt-6 border-t border-gray-100 text-[10px] text-gray-400 text-center flex flex-col items-center gap-2">
+                        <p>Documento generado automáticamente. Los precios y condiciones están sujetos a variación sin
+                            previo aviso.</p>
+                        <p class="font-semibold text-gray-300">TECHB2B.COM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification for copy to clipboard -->
+    <div id="toast"
+        class="fixed bottom-6 right-6 bg-gray-900 text-white px-5 py-3.5 rounded-xl shadow-2xl shadow-gray-900/20 transform transition-all duration-300 translate-y-24 opacity-0 flex items-center gap-3 z-50 font-medium text-sm">
+        <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+            <i class="ph-fill ph-check-circle text-xl"></i>
+        </div>
+        <span>Texto copiado al portapapeles</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Mock Data for Asesores ---
+            const asesoresData = [
+                { nombre: 'Brunella Sanchez', correo: 'bsanchez@techb2b.com' },
+                { nombre: 'Andrea Velasquez', correo: 'avelasquez@techb2b.com' },
+                { nombre: 'Carlos Ruiz', correo: 'cruiz@techb2b.com' }
+            ];
+
+            const datalist = document.getElementById('asesoresList');
+            asesoresData.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = `${a.nombre} (${a.correo})`;
+                datalist.appendChild(opt);
+            });
+
+            // --- State & Defaults ---
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = today;
+
+            let pagosIdCounter = 0;
+            const state = {
+                pagos: []
+            };
+
+            // --- Helpers ---
+            const formatMoney = (num) => {
+                return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            };
+
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '';
+                const [y, m, d] = dateStr.split('-');
+                return `${d}/${m}/${y}`;
+            };
+
+            // --- Dynamic Table Logic ---
+            const container = document.getElementById('pagosContainer');
+
+            const addRow = () => {
+                const id = ++pagosIdCounter;
+                state.pagos.push({ id, desc: 'SEPARACIÓN', monto: 0, fecha: today, indefinida: false });
+                renderRows();
+                updatePreview();
+            };
+
+            const renderRows = () => {
+                container.innerHTML = '';
+                state.pagos.forEach((pago) => {
+                    const row = document.createElement('div');
+                    row.className = 'grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto] gap-3 items-start bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm transition-all hover:border-brand-light/30';
+
+                    row.innerHTML = `
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Concepto</label>
+                    <select class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none desc-input font-medium cursor-pointer" data-id="${pago.id}">
+                        <option value="SEPARACIÓN" ${pago.desc === 'SEPARACIÓN' ? 'selected' : ''}>SEPARACIÓN</option>
+                        <option value="INICIAL" ${pago.desc === 'INICIAL' ? 'selected' : ''}>INICIAL</option>
+                        <option value="CUOTA" ${pago.desc === 'CUOTA' ? 'selected' : ''}>CUOTA</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Monto</label>
+                    <input type="number" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none monto-input font-semibold" placeholder="0.00" value="${pago.monto || ''}" data-id="${pago.id}">
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fecha</label>
+                        <label class="flex items-center gap-1.5 cursor-pointer group">
+                            <input type="checkbox" class="indef-input w-3 h-3 text-brand-light rounded border-gray-300 focus:ring-brand-light cursor-pointer" data-id="${pago.id}" ${pago.indefinida ? 'checked' : ''}>
+                            <span class="text-[10px] font-medium text-gray-500 group-hover:text-gray-800 transition-colors">Indefinida</span>
+                        </label>
+                    </div>
+                    <input type="date" class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-brand-light/50 outline-none fecha-input text-gray-600 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed cursor-pointer" data-id="${pago.id}" value="${pago.fecha}" ${pago.indefinida ? 'disabled' : ''}>
+                </div>
+                <div class="pt-6">
+                    <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors del-btn" data-id="${pago.id}" title="Eliminar fila">
+                        <i class="ph-bold ph-trash"></i>
+                    </button>
+                </div>
+            `;
+                    container.appendChild(row);
+                });
+
+                // Event Listeners for Dynamic Row Inputs
+                container.querySelectorAll('.desc-input').forEach(el => el.addEventListener('change', (e) => {
+                    state.pagos.find(p => p.id == e.target.dataset.id).desc = e.target.value;
+                    updatePreview();
+                }));
+                container.querySelectorAll('.monto-input').forEach(el => el.addEventListener('input', (e) => {
+                    state.pagos.find(p => p.id == e.target.dataset.id).monto = parseFloat(e.target.value) || 0;
+                    updatePreview();
+                }));
+                container.querySelectorAll('.fecha-input').forEach(el => el.addEventListener('input', (e) => {
+                    state.pagos.find(p => p.id == e.target.dataset.id).fecha = e.target.value;
+                    updatePreview();
+                }));
+                container.querySelectorAll('.indef-input').forEach(el => el.addEventListener('change', (e) => {
+                    state.pagos.find(p => p.id == e.target.dataset.id).indefinida = e.target.checked;
+                    renderRows();
+                    updatePreview();
+                }));
+                container.querySelectorAll('.del-btn').forEach(el => el.addEventListener('click', (e) => {
+                    state.pagos = state.pagos.filter(p => p.id != e.currentTarget.dataset.id);
+                    renderRows();
+                    updatePreview();
+                }));
+            };
+
+            document.getElementById('addRowBtn').addEventListener('click', addRow);
+            addRow(); // Initialize with one row
+
+            // --- Live Preview Synchronization ---
+            const inputsToWatch = ['asesor', 'cliente', 'codPais', 'telefono', 'fecha', 'area', 'etapa', 'mz', 'lote'];
+            inputsToWatch.forEach(id => {
+                document.getElementById(id).addEventListener('input', updatePreview);
+            });
+
+            document.querySelectorAll('input[name="moneda"]').forEach(el => {
+                el.addEventListener('change', updatePreview);
+            });
+
+            function updatePreview() {
+                // Read form values
+                const asesorVal = document.getElementById('asesor').value;
+                const cliente = document.getElementById('cliente').value;
+                const codPais = document.getElementById('codPais').value;
+                const telefono = document.getElementById('telefono').value;
+                const fecha = document.getElementById('fecha').value;
+                const area = document.getElementById('area').value;
+                const etapa = document.getElementById('etapa').value;
+                const mz = document.getElementById('mz').value;
+                const lote = document.getElementById('lote').value;
+                const moneda = document.querySelector('input[name="moneda"]:checked').value;
+
+                // Extract Name and Email from Asesor Datalist value
+                let asesorNombre = asesorVal;
+                let asesorCorreo = '';
+                if (asesorVal.includes('(') && asesorVal.endsWith(')')) {
+                    const parts = asesorVal.split('(');
+                    asesorNombre = parts[0].trim();
+                    asesorCorreo = parts[1].replace(')', '').trim();
+                }
+
+                // Update static preview nodes
+                document.getElementById('prevAsesor').textContent = asesorNombre || '-';
+                document.getElementById('prevAsesorCorreo').textContent = asesorCorreo;
+                document.getElementById('prevCliente').textContent = cliente || '-';
+                document.getElementById('prevTelefono').textContent = telefono ? `${codPais} ${telefono}` : '-';
+                document.getElementById('prevFecha').textContent = formatDate(fecha) || '-';
+                document.getElementById('prevArea').textContent = area || '-';
+                document.getElementById('prevEtapa').textContent = etapa || '-';
+                document.getElementById('prevMz').textContent = mz || '-';
+                document.getElementById('prevLote').textContent = lote || '-';
+
+                document.querySelectorAll('.prevMoneda').forEach(el => el.textContent = moneda);
+
+                // Update dynamic table in preview
+                const tbody = document.getElementById('prevPagosTable');
+                tbody.innerHTML = '';
+                let total = 0;
+
+                state.pagos.forEach(pago => {
+                    const tr = document.createElement('tr');
+
+                    const displayFecha = pago.indefinida ? 'Fecha Indefinida' : formatDate(pago.fecha) || '-';
+                    const displayMonto = formatMoney(pago.monto);
+
+                    tr.innerHTML = `
+                <td class="py-3 px-2 text-sm font-semibold text-gray-800">${pago.desc}</td>
+                <td class="py-3 px-2 text-sm text-gray-500 font-medium">${displayFecha}</td>
+                <td class="py-3 px-2 text-sm text-right font-bold text-gray-900">${displayMonto}</td>
+            `;
+                    tbody.appendChild(tr);
+                    total += pago.monto;
+                });
+
+                // Update totals
+                const displayTotal = formatMoney(total);
+                document.getElementById('prevTotal').textContent = displayTotal;
+                document.getElementById('totalMontoForm').textContent = `${moneda} ${displayTotal}`;
+            }
+
+            // --- Export PDF (html2pdf) ---
+            document.getElementById('btnPdf').addEventListener('click', () => {
+                const element = document.getElementById('pdfContent');
+                const clienteName = document.getElementById('cliente').value.replace(/\s+/g, '_') || 'Cliente';
+
+                const opt = {
+                    margin: 0,
+                    filename: `Cotizacion_${clienteName}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                const btn = document.getElementById('btnPdf');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-xl"></i> Generando...';
+                btn.classList.add('opacity-80', 'cursor-not-allowed');
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                });
+            });
+
+            // --- Export Excel (SheetJS) ---
+            document.getElementById('btnExcel').addEventListener('click', () => {
+                const cliente = document.getElementById('cliente').value || 'Cliente';
+                const wb = XLSX.utils.book_new();
+
+                const moneda = document.querySelector('input[name="moneda"]:checked').value;
+                const total = state.pagos.reduce((sum, p) => sum + p.monto, 0);
+
+                // Build array of arrays for the sheet
+                const data = [
+                    ["TECH B2B REAL ESTATE"],
+                    ["COTIZACIÓN OFICIAL"],
+                    [""],
+                    ["DATOS DEL CLIENTE"],
+                    ["Asesor a cargo", document.getElementById('asesor').value],
+                    ["Nombre del Cliente", cliente],
+                    ["Teléfono de Contacto", `${document.getElementById('codPais').value} ${document.getElementById('telefono').value}`],
+                    ["Fecha de Emisión", document.getElementById('fecha').value],
+                    [""],
+                    ["DETALLES DEL INMUEBLE"],
+                    ["Etapa", document.getElementById('etapa').value],
+                    ["Manzana", document.getElementById('mz').value],
+                    ["Lote", document.getElementById('lote').value],
+                    ["Área (m2)", document.getElementById('area').value],
+                    [""],
+                    ["PLAN DE INVERSIÓN", "", `Moneda: ${moneda}`],
+                    ["Concepto", "Fecha Programada", "Monto"]
+                ];
+
+                state.pagos.forEach(p => {
+                    data.push([
+                        p.desc,
+                        p.indefinida ? 'Indefinida' : p.fecha,
+                        p.monto
+                    ]);
+                });
+
+                data.push(["", "INVERSIÓN TOTAL", total]);
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+
+                // Auto-size columns slightly
+                ws['!cols'] = [{ wch: 25 }, { wch: 25 }, { wch: 15 }];
+
+                XLSX.utils.book_append_sheet(wb, ws, "Cotización");
+                XLSX.writeFile(wb, `Cotizacion_${cliente.replace(/\s+/g, '_')}.xlsx`);
+            });
+
+            // --- Copy to WhatsApp ---
+            document.getElementById('btnWsp').addEventListener('click', () => {
+                const cliente = document.getElementById('cliente').value || 'Cliente';
+                const lote = document.getElementById('lote').value || '-';
+                const mz = document.getElementById('mz').value || '-';
+                const etapa = document.getElementById('etapa').value || '-';
+                const area = document.getElementById('area').value || '-';
+                const moneda = document.querySelector('input[name="moneda"]:checked').value;
+                const total = formatMoney(state.pagos.reduce((sum, p) => sum + p.monto, 0));
+
+                let text = `Hola *${cliente}* 👋,\n\nTe adjunto el resumen de la cotización del inmueble de tu interés:\n\n`;
+                text += `📍 *Ubicación:* Etapa ${etapa}, Mz ${mz}, Lote ${lote}\n`;
+                text += `📏 *Área:* ${area} m²\n\n`;
+                text += `💰 *Plan de Inversión (Total: ${moneda} ${total}):*\n`;
+
+                state.pagos.forEach(p => {
+                    const fechaStr = p.indefinida ? 'Fecha Indefinida' : formatDate(p.fecha);
+                    text += `• ${p.desc}: ${moneda} ${formatMoney(p.monto)} (${fechaStr})\n`;
+                });
+
+                text += `\nQuedo atento a tus comentarios para cualquier consulta.\n¡Saludos!`;
+
+                navigator.clipboard.writeText(text).then(() => {
+                    const toast = document.getElementById('toast');
+                    toast.classList.remove('translate-y-24', 'opacity-0');
+                    setTimeout(() => {
+                        toast.classList.add('translate-y-24', 'opacity-0');
+                    }, 3000);
+                });
+            });
+
+        });
+    </script>
+</body>
+
+</html>

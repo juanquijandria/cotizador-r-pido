@@ -294,11 +294,12 @@
                             <img src="logo.png" alt="Megaproyecto Pachamama" class="h-44 w-auto object-contain block">
                             <div class="h-24 border-l-2 border-gray-300 mx-8 mb-6"></div>
                             <div class="mb-6">
-                                <h1 class="text-5xl font-light text-gray-800 tracking-tight leading-none mb-2">COTIZACIÓN</h1>
+                                <h1 class="text-5xl font-light text-gray-800 tracking-tight leading-none mb-2">
+                                    COTIZACIÓN</h1>
                                 <p class="text-sm text-gray-500">Válido por 24 horas</p>
                             </div>
                         </div>
-                        
+
                         <div class="text-right mb-6">
                             <div class="text-sm font-medium text-gray-600 mb-1">
                                 <span>Fecha: </span><span id="prevFechaHeader">-</span>
@@ -401,7 +402,8 @@
                                         Inversión Total:</td>
                                     <td class="py-5 px-2 font-black text-right text-xl text-gray-900 whitespace-nowrap">
                                         <span class="prevMoneda text-brand-light">S/</span> <span
-                                            id="prevTotal">0.00</span></td>
+                                            id="prevTotal">0.00</span>
+                                    </td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -410,7 +412,8 @@
                     <!-- FOOTER -->
                     <div
                         class="mt-12 pt-6 border-t border-gray-100 text-[10px] text-gray-400 text-center flex flex-col items-center gap-2">
-                        <p>Documento generado automáticamente. Los precios, áreas y condiciones comerciales están sujetos a evaluación y variación sin previo aviso. Válido por 24 horas.</p>
+                        <p>Documento generado automáticamente. Los precios, áreas y condiciones comerciales están
+                            sujetos a evaluación y variación sin previo aviso. Válido por 24 horas.</p>
                         <p class="font-semibold text-gray-300">PROYECTO PACHAMAMA</p>
                     </div>
                 </div>
@@ -721,23 +724,23 @@
                     renderRows();
                     updatePreview();
                 }));
-                
+
                 container.querySelectorAll('.monto-input').forEach(el => el.addEventListener('input', (e) => {
                     state.pagos.find(p => p.id == e.target.dataset.id).monto = parseFloat(e.target.value) || 0;
                     updatePreview();
                 }));
-                
+
                 container.querySelectorAll('.fecha-input').forEach(el => el.addEventListener('input', (e) => {
                     state.pagos.find(p => p.id == e.target.dataset.id).fecha = e.target.value;
                     updatePreview();
                 }));
-                
+
                 container.querySelectorAll('.indef-input').forEach(el => el.addEventListener('change', (e) => {
                     state.pagos.find(p => p.id == e.target.dataset.id).indefinida = e.target.checked;
                     renderRows();
                     updatePreview();
                 }));
-                
+
                 container.querySelectorAll('.del-btn').forEach(el => el.addEventListener('click', (e) => {
                     const id = e.currentTarget.dataset.id;
                     state.pagos = state.pagos.filter(p => p.id != id);
@@ -758,7 +761,7 @@
                     const pago = state.pagos.find(p => p.id == e.target.dataset.id);
                     pago.adelanto = parseFloat(e.target.value) || 0;
                     const saldo = Math.max(0, (pago.monto || 0) - pago.adelanto);
-                    
+
                     const saldoInput = e.target.closest('.grid').querySelector('.saldo-readonly');
                     if (saldoInput) {
                         const moneda = document.querySelector('input[name="moneda"]:checked')?.value || 'S/';
@@ -780,15 +783,15 @@
                 container.querySelectorAll('.generar-fraccionamiento-btn').forEach(el => el.addEventListener('click', (e) => {
                     const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
                     const saldo = Math.max(0, (pago.monto || 0) - (pago.adelanto || 0));
-                    
+
                     if (!pago.monto || pago.monto <= 0) return alert('Ingrese un monto total de Inicial válido');
                     if (saldo < 0) return alert('El adelanto no puede ser mayor al monto total');
                     if (!pago.meses || pago.meses <= 0) return alert('Ingrese un número de cuotas válido');
-                    
+
                     pago.isGenerated = true;
                     pago.isOpen = true;
                     pago.cuotas = [];
-                    
+
                     pago.cuotas.push({
                         id: `${pago.id}-adelanto`,
                         desc: `INICIAL (Adelanto)`,
@@ -801,7 +804,7 @@
                         const todayDate = new Date();
                         let currentYear = todayDate.getFullYear();
                         let currentMonth = todayDate.getMonth() + 1;
-                        
+
                         for (let i = 1; i <= pago.meses; i++) {
                             let calcMonth = currentMonth + i;
                             let calcYear = currentYear;
@@ -809,13 +812,13 @@
                                 calcMonth -= 12;
                                 calcYear += 1;
                             }
-                            
+
                             let calcDay = pago.diaPago;
                             let maxDaysInMonth = new Date(calcYear, calcMonth, 0).getDate();
                             if (calcDay > maxDaysInMonth) calcDay = maxDaysInMonth;
-                            
+
                             const calcDateStr = `${calcYear}-${String(calcMonth).padStart(2, '0')}-${String(calcDay).padStart(2, '0')}`;
-                            
+
                             pago.cuotas.push({
                                 id: `${pago.id}-saldo-${i}`,
                                 desc: `CUOTA SALDO INICIAL ${i}`,
@@ -824,7 +827,7 @@
                             });
                         }
                     }
-                    
+
                     renderRows();
                     updatePreview();
                 }));
@@ -840,33 +843,33 @@
                 container.querySelectorAll('.monto-financiar-input').forEach(el => el.addEventListener('input', (e) => {
                     state.pagos.find(p => p.id == e.target.dataset.id).montoTotal = parseFloat(e.target.value) || 0;
                 }));
-                
+
                 container.querySelectorAll('.meses-input').forEach(el => el.addEventListener('input', (e) => {
                     state.pagos.find(p => p.id == e.target.dataset.id).meses = parseInt(e.target.value, 10) || 0;
                 }));
-                
+
                 container.querySelectorAll('.dia-pago-input').forEach(el => el.addEventListener('input', (e) => {
                     let val = parseInt(e.target.value, 10) || 1;
                     if (val < 1) val = 1;
                     if (val > 31) val = 31;
                     state.pagos.find(p => p.id == e.target.dataset.id).diaPago = val;
                 }));
-                
+
                 container.querySelectorAll('.generar-cuotas-btn').forEach(el => el.addEventListener('click', (e) => {
                     const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
                     if (!pago.montoTotal || pago.montoTotal <= 0) return alert('Ingrese un monto válido');
                     if (!pago.meses || pago.meses <= 0) return alert('Ingrese un número de meses válido');
-                    
+
                     pago.isGenerated = true;
                     pago.isOpen = true; // open accordion by default
                     pago.cuotas = [];
-                    
+
                     const montoPorCuota = pago.montoTotal / pago.meses;
-                    
+
                     const todayDate = new Date();
                     let currentYear = todayDate.getFullYear();
                     let currentMonth = todayDate.getMonth() + 1; // 1-12
-                    
+
                     for (let i = 1; i <= pago.meses; i++) {
                         let calcMonth = currentMonth + i;
                         let calcYear = currentYear;
@@ -874,13 +877,13 @@
                             calcMonth -= 12;
                             calcYear += 1;
                         }
-                        
+
                         let calcDay = pago.diaPago;
                         let maxDaysInMonth = new Date(calcYear, calcMonth, 0).getDate();
                         if (calcDay > maxDaysInMonth) calcDay = maxDaysInMonth;
-                        
+
                         const calcDateStr = `${calcYear}-${String(calcMonth).padStart(2, '0')}-${String(calcDay).padStart(2, '0')}`;
-                        
+
                         pago.cuotas.push({
                             id: `${pago.id}-${i}`,
                             desc: `Cuota ${i}`,
@@ -888,18 +891,18 @@
                             fecha: calcDateStr
                         });
                     }
-                    
+
                     renderRows();
                     updatePreview();
                 }));
-                
+
                 container.querySelectorAll('.edit-cuotas-btn').forEach(el => el.addEventListener('click', (e) => {
                     const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
                     pago.isGenerated = false;
                     renderRows();
                     updatePreview();
                 }));
-                
+
                 container.querySelectorAll('.toggle-cuotas-btn').forEach(el => el.addEventListener('click', (e) => {
                     const pago = state.pagos.find(p => p.id == e.currentTarget.dataset.id);
                     pago.isOpen = !pago.isOpen;
@@ -1139,7 +1142,7 @@
                     },
                     alignment: { horizontal: "center", vertical: "center" }
                 };
-                
+
                 const tableCellStyle = {
                     border: {
                         top: { style: "thin", color: { rgb: "CCCCCC" } },
@@ -1149,13 +1152,13 @@
                     },
                     alignment: { vertical: "center" }
                 };
-                
+
                 const tableMoneyStyle = {
                     ...tableCellStyle,
                     numFmt: `"${moneda}" #,##0.00`,
                     alignment: { horizontal: "right", vertical: "center" }
                 };
-                
+
                 const totalStyle = {
                     font: { bold: true, color: { rgb: "000000" }, sz: 12 },
                     fill: { fgColor: { rgb: "FFF2F2" } },
@@ -1168,7 +1171,7 @@
                     numFmt: `"${moneda}" #,##0.00`,
                     alignment: { horizontal: "right", vertical: "center" }
                 };
-                
+
                 const totalLabelStyle = {
                     font: { bold: true, color: { rgb: "000000" }, sz: 12 },
                     fill: { fgColor: { rgb: "FFF2F2" } },
@@ -1183,7 +1186,7 @@
 
                 // Build array of arrays for the sheet
                 const data = [
-                    [{ v: "MEGAPROYECTO PACHAMAMA - COTIZACIÓN", t: "s", s: titleStyle }, {v:"", s:titleStyle}, {v:"", s:titleStyle}],
+                    [{ v: "MEGAPROYECTO PACHAMAMA - COTIZACIÓN", t: "s", s: titleStyle }, { v: "", s: titleStyle }, { v: "", s: titleStyle }],
                     ["", "", ""],
                     [{ v: "DATOS DEL CLIENTE", t: "s", s: { font: { bold: true, sz: 12 } } }, "", ""],
                     [{ v: "Asesor a cargo", s: headerStyle }, { v: asesorNombre, s: cellStyle }, { v: "", s: cellStyle }],
@@ -1241,7 +1244,7 @@
                     { s: { r: 15, c: 0 }, e: { r: 15, c: 2 } }, // Plan de Inversión
                     { s: { r: data.length - 1, c: 0 }, e: { r: data.length - 1, c: 1 } } // Total label
                 ];
-                
+
                 // Auto-size columns slightly
                 ws['!cols'] = [{ wch: 25 }, { wch: 25 }, { wch: 20 }];
 
